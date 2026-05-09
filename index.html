@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pragyaa.AI — Prompt Evolution Engine</title>
+  <meta name="description" content="Vertex AI powered audit prompt optimizer for ICICI Bank DC verification pipeline">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-grid"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <h1 class="logo-text">Pragyaa<span>.AI</span></h1>
+        <p class="logo-sub">Prompt Evolution Engine</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      Vertex AI Engine <small style="opacity: 0.5; margin-left: 5px;">v1.0.9-routing-fix</small>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Step 1: Upload -->
+    <section class="card upload-card" id="uploadSection">
+      <div class="card-header">
+        <div class="step-badge">STEP 1</div>
+        <h2>Upload Audit Feedback</h2>
+        <p>Drop your AI vs Verifier Excel file to begin analysis</p>
+      </div>
+
+      <!-- Settings / Configuration -->
+      <div class="settings-grid">
+        <div class="settings-col">
+          <label class="input-label">AI Engine</label>
+          <div class="engine-status">
+            <span class="engine-dot"></span>
+            <span class="engine-name">Vertex AI</span>
+          </div>
+        </div>
+        <div class="settings-col">
+          <label class="input-label">Engine Mode</label>
+          <select id="engineMode" class="prompt-textarea" style="height: 48px; min-height: 48px; padding: 0 12px;">
+            <option value="gemini">Vertex AI (Local Mode)</option>
+            <option value="vertex">Vertex AI (Backend)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">📊</div>
+        <p class="dropzone-text">Drag & drop Excel file here</p>
+        <p class="dropzone-sub">or click to browse • .xlsx only</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+      </div>
+      <div class="file-info" id="fileInfo" style="display:none">
+        <div class="file-chip">
+          <span class="file-icon">📄</span>
+          <span id="fileName"></span>
+          <button class="file-remove" id="removeFile">✕</button>
+        </div>
+      </div>
+
+      <!-- Current Prompt Upload -->
+      <div class="prompt-upload-section">
+        <h3>Current Prompt <span class="optional-tag">optional</span></h3>
+        <p class="prompt-upload-desc">Paste your current audit prompt to compare against</p>
+        <textarea id="currentPrompt" class="prompt-textarea" placeholder="Paste your current DC verification prompt here...&#10;&#10;The system will compare it with the Excel feedback to identify gaps and generate an optimized version."></textarea>
+      </div>
+
+      <button class="btn-primary" id="analyzeBtn" disabled>
+        <span class="btn-icon">🔬</span>
+        Run Analysis & Generate AI Prompt
+      </button>
+    </section>
+
+    <!-- Step 2: Analysis Results (hidden initially) -->
+    <section class="card results-card" id="resultsSection" style="display:none">
+      <div class="card-header">
+        <div class="step-badge">STEP 2</div>
+        <h2>Root Cause Analysis</h2>
+        <p>AI vs Verifier discrepancy breakdown</p>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <!-- Parameter Failures -->
+      <div class="failures-section">
+        <h3>Parameter Failure Heatmap</h3>
+        <div class="failures-bars" id="failureBars"></div>
+      </div>
+
+      <!-- Pattern Analysis -->
+      <div class="patterns-grid" id="patternsGrid"></div>
+    </section>
+
+    <!-- Step 3: Optimized Prompt (hidden initially) -->
+    <section class="card prompt-card" id="promptSection" style="display:none">
+      <div class="card-header">
+        <div class="step-badge">STEP 3</div>
+        <h2>Optimized Prompt</h2>
+        <p>Auto-refined based on feedback data — ready to deploy</p>
+      </div>
+
+      <!-- Diff View Toggle -->
+      <div class="prompt-toolbar">
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-view="optimized">Optimized Prompt</button>
+          <button class="toggle-btn" data-view="changes">Changes Made</button>
+          <button class="toggle-btn" data-view="report">Full Report</button>
+        </div>
+        <div class="toolbar-actions">
+          <button class="btn-icon-sm" id="copyPrompt" title="Copy to clipboard">📋 Copy</button>
+          <button class="btn-icon-sm" id="downloadPrompt" title="Download as .txt">⬇️ Download</button>
+        </div>
+      </div>
+
+      <div class="prompt-view" id="promptView">
+        <pre id="optimizedPrompt" class="prompt-code"></pre>
+        <div id="changesView" class="changes-view" style="display:none"></div>
+        <div id="reportView" class="report-view" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- Step 4: Live Test (hidden initially) -->
+    <section class="card test-card" id="testSection" style="display:none">
+      <div class="card-header">
+        <div class="step-badge">STEP 4</div>
+        <h2>Live Test with Audio</h2>
+        <p>Verify the new prompt by transcribing and auditing a sample call</p>
+      </div>
+
+      <div class="test-grid">
+        <div class="test-upload">
+          <label class="input-label">Upload Sample Call (.mp3)</label>
+          <div class="audio-dropzone" id="audioDropzone">
+            <div class="dropzone-icon">🎙️</div>
+            <p>Drag & drop audio here</p>
+            <input type="file" id="audioInput" accept=".mp3" hidden>
+          </div>
+          <div id="audioFileInfo" class="file-chip" style="display:none; margin-top: 12px;">
+            <span class="file-icon">🎵</span>
+            <span id="audioFileName"></span>
+          </div>
+        </div>
+        
+        <div class="test-actions">
+          <button class="btn-secondary" id="runTestBtn" disabled>
+            <span class="btn-icon">▶️</span> Run Live Audit
+          </button>
+        </div>
+      </div>
+
+      <div id="testResults" class="test-results" style="display:none">
+        <div class="test-col">
+          <h3>Generated Transcript</h3>
+          <div id="testTranscript" class="transcript-box"></div>
+        </div>
+        <div class="test-col">
+          <h3>AI Audit Result</h3>
+          <div id="testAudit" class="audit-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Evolution History -->
+    <section class="card history-card" id="historySection" style="display:none">
+      <div class="card-header">
+        <div class="step-badge">HISTORY</div>
+        <h2>Prompt Evolution Timeline</h2>
+        <p>Track how your prompt improves over successive feedback cycles</p>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p class="loader-text">Analyzing audit data...</p>
+      <p class="loader-sub" id="loaderSub">Reading Excel • Comparing verdicts • Extracting patterns</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

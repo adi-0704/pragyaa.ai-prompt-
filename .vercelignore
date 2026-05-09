@@ -1,0 +1,8 @@
+*.xlsx
+*.mp3
+*.zip
+*.joblib
+scratch/
+__pycache__/
+*.pyc
+.env
