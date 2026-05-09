@@ -2,9 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/api/analyze",  "destination": "/api/index.py" },
-    { "source": "/api/vertex",   "destination": "/api/index.py" },
-    { "source": "/api/health",   "destination": "/api/index.py" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
