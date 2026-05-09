@@ -528,13 +528,13 @@ body {
 }
 
 .transcript-box, .audit-box {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  height: 300px;
+  height: 400px;
   overflow-y: auto;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--mono);
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -543,7 +543,15 @@ body {
 
 .audit-box {
   color: var(--text-primary);
-  border-color: rgba(0, 242, 254, 0.2);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.json-output {
+  margin: 0;
+  font-family: var(--mono);
+  color: #a5b4fc;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* Responsive */

@@ -264,6 +264,17 @@ runTestBtn.onclick = async () => {
   showLoading('Running Variance Test...');
   
   try {
+    // Helper to format AI response
+    const formatResponse = (text) => {
+      let cleaned = text.replace(/```json\s*/, '').replace(/```\s*$/, '').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        return `<pre class="json-output">${JSON.stringify(parsed, null, 2)}</pre>`;
+      } catch (e) {
+        return `<pre class="json-output">${cleaned}</pre>`;
+      }
+    };
+
     updateLoader('⚖️ Auditing with OLD Prompt...');
     const oldEvalResponse = await fetch('/api/vertex', {
       method: 'POST',
@@ -276,7 +287,8 @@ runTestBtn.onclick = async () => {
     
     if (!oldEvalResponse.ok) throw new Error('Old Audit failed');
     const oldEvalResult = await oldEvalResponse.json();
-    oldAuditResult.textContent = oldEvalResult.text || oldEvalResult.response || JSON.stringify(oldEvalResult);
+    const oldRawText = oldEvalResult.text || oldEvalResult.response || JSON.stringify(oldEvalResult);
+    oldAuditResult.innerHTML = formatResponse(oldRawText);
 
     updateLoader('⚖️ Auditing with NEW Optimized Prompt...');
     const newEvalResponse = await fetch('/api/vertex', {
@@ -290,7 +302,8 @@ runTestBtn.onclick = async () => {
     
     if (!newEvalResponse.ok) throw new Error('New Audit failed');
     const newEvalResult = await newEvalResponse.json();
-    newAuditResult.textContent = newEvalResult.text || newEvalResult.response || JSON.stringify(newEvalResult);
+    const newRawText = newEvalResult.text || newEvalResult.response || JSON.stringify(newEvalResult);
+    newAuditResult.innerHTML = formatResponse(newRawText);
     
     testResults.style.display = 'grid';
     testResults.scrollIntoView({ behavior: 'smooth' });
