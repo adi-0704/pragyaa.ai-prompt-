@@ -36,15 +36,12 @@ const loadingOverlay = $('loadingOverlay');
 const toast = $('toast');
 const engineModeSelect = $('engineMode');
 
-// Audio References
-const audioDropzone = $('audioDropzone');
-const audioInput = $('audioInput');
-const audioFileInfo = $('audioFileInfo');
-const audioFileName = $('audioFileName');
+// Audio References (Replaced by Transcript Test)
 const runTestBtn = $('runTestBtn');
 const testResults = $('testResults');
-const testTranscript = $('testTranscript');
-const testAudit = $('testAudit');
+const testTranscriptInput = $('testTranscriptInput');
+const oldAuditResult = $('oldAuditResult');
+const newAuditResult = $('newAuditResult');
 
 // ─── Event Listeners ──────────────────────────
 engineModeSelect.addEventListener('change', (e) => {
@@ -106,24 +103,7 @@ removeFile.onclick = (e) => {
   analyzeBtn.disabled = true;
 };
 
-// ─── Audio Upload Handlers ────────────────────
-audioDropzone.onclick = () => audioInput.click();
-audioInput.onchange = e => { if (e.target.files[0]) handleAudioFile(e.target.files[0]); };
-audioDropzone.ondragover = e => { e.preventDefault(); audioDropzone.classList.add('drag-over'); };
-audioDropzone.ondragleave = () => audioDropzone.classList.remove('drag-over');
-audioDropzone.ondrop = e => {
-  e.preventDefault();
-  audioDropzone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) handleAudioFile(e.dataTransfer.files[0]);
-};
-
-function handleAudioFile(file) {
-  state.audioFile = file;
-  audioFileName.textContent = file.name;
-  audioFileInfo.style.display = 'flex';
-  runTestBtn.disabled = false;
-  showToast('🎵 Audio file ready for test');
-}
+// Audio handlers removed — text transcript pasting is now used directly.
 
 // ─── Analysis Pipeline ────────────────────────
 analyzeBtn.onclick = async () => {
@@ -273,51 +253,49 @@ function finalizeAnalysis() {
 
 // ─── Live Test Pipeline ───────────────────────
 runTestBtn.onclick = async () => {
-  if (!state.audioFile || !state.optimizedPrompt) return;
-  showLoading('Running Live Test...');
+  const transcriptText = testTranscriptInput.value.trim();
+  const currentPrompt = $('currentPrompt').value.trim() || 'You are an auditor. Audit the call.';
+  
+  if (!transcriptText || !state.optimizedPrompt) {
+    showToast('⚠️ Please generate an optimized prompt and paste a transcript first.');
+    return;
+  }
+  
+  showLoading('Running Variance Test...');
   
   try {
-    updateLoader('🎙️ Transcribing audio...');
-    const reader = new FileReader();
-    const audioBase64 = await new Promise(r => {
-      reader.onload = () => r(reader.result.split(',')[1]);
-      reader.readAsDataURL(state.audioFile);
-    });
-    
-    const transResponse = await fetch('/api/vertex', {
+    updateLoader('⚖️ Auditing with OLD Prompt...');
+    const oldEvalResponse = await fetch('/api/vertex', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        prompt: "Transcribe this ICICI Bank sales call precisely. Include agent and customer labels.",
-        audio: audioBase64,
-        mime: 'audio/mpeg'
-      })
-    });
-    
-    if (!transResponse.ok) throw new Error('Transcription failed');
-    const transResult = await transResponse.json();
-    const transcript = transResult.text || transResult.response || "No transcript generated";
-    testTranscript.textContent = transcript;
-    
-    updateLoader('⚖️ Auditing transcript...');
-    const evalResponse = await fetch('/api/vertex', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prompt: `${state.optimizedPrompt}\n\n[TRANSCRIPT TO AUDIT]:\n${transcript}`,
+        prompt: `${currentPrompt}\n\n[TRANSCRIPT TO AUDIT]:\n${transcriptText}`,
         model: "gemini-2.5-flash-lite"
       })
     });
     
-    if (!evalResponse.ok) throw new Error('Audit failed');
-    const evalResult = await evalResponse.json();
-    const auditText = evalResult.text || evalResult.response || "No audit result";
-    testAudit.textContent = auditText;
+    if (!oldEvalResponse.ok) throw new Error('Old Audit failed');
+    const oldEvalResult = await oldEvalResponse.json();
+    oldAuditResult.textContent = oldEvalResult.text || oldEvalResult.response || JSON.stringify(oldEvalResult);
+
+    updateLoader('⚖️ Auditing with NEW Optimized Prompt...');
+    const newEvalResponse = await fetch('/api/vertex', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: `${state.optimizedPrompt}\n\n[TRANSCRIPT TO AUDIT]:\n${transcriptText}`,
+        model: "gemini-2.5-flash-lite"
+      })
+    });
+    
+    if (!newEvalResponse.ok) throw new Error('New Audit failed');
+    const newEvalResult = await newEvalResponse.json();
+    newAuditResult.textContent = newEvalResult.text || newEvalResult.response || JSON.stringify(newEvalResult);
     
     testResults.style.display = 'grid';
     testResults.scrollIntoView({ behavior: 'smooth' });
     hideLoading();
-    showToast('✅ Live Test Complete');
+    showToast('✅ Variance Test Complete');
     
   } catch (err) {
     hideLoading();

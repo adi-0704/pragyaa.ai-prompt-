@@ -139,39 +139,31 @@
     <section class="card test-card" id="testSection" style="display:none">
       <div class="card-header">
         <div class="step-badge">STEP 4</div>
-        <h2>Live Test with Audio</h2>
-        <p>Verify the new prompt by transcribing and auditing a sample call</p>
+        <h2>Live Test: Variance Reduction</h2>
+        <p>Paste a call transcript to see how the New Prompt fixes errors from the Current Prompt</p>
       </div>
 
-      <div class="test-grid">
-        <div class="test-upload">
-          <label class="input-label">Upload Sample Call (.mp3)</label>
-          <div class="audio-dropzone" id="audioDropzone">
-            <div class="dropzone-icon">🎙️</div>
-            <p>Drag & drop audio here</p>
-            <input type="file" id="audioInput" accept=".mp3" hidden>
-          </div>
-          <div id="audioFileInfo" class="file-chip" style="display:none; margin-top: 12px;">
-            <span class="file-icon">🎵</span>
-            <span id="audioFileName"></span>
-          </div>
+      <div class="test-grid" style="grid-template-columns: 1fr;">
+        <div class="test-upload" style="margin-bottom: 20px;">
+          <label class="input-label">Paste Sample Call Transcript</label>
+          <textarea id="testTranscriptInput" class="prompt-textarea" placeholder="Agent: Hello...&#10;Customer: Yes...&#10;&#10;Paste a typical failing call transcript here to test." style="height: 150px;"></textarea>
         </div>
         
         <div class="test-actions">
-          <button class="btn-secondary" id="runTestBtn" disabled>
-            <span class="btn-icon">▶️</span> Run Live Audit
+          <button class="btn-secondary" id="runTestBtn">
+            <span class="btn-icon">▶️</span> Run Variance Test
           </button>
         </div>
       </div>
 
       <div id="testResults" class="test-results" style="display:none">
         <div class="test-col">
-          <h3>Generated Transcript</h3>
-          <div id="testTranscript" class="transcript-box"></div>
+          <h3>Old Prompt Evaluation</h3>
+          <div id="oldAuditResult" class="audit-box"></div>
         </div>
         <div class="test-col">
-          <h3>AI Audit Result</h3>
-          <div id="testAudit" class="audit-box"></div>
+          <h3>Optimized Prompt Evaluation</h3>
+          <div id="newAuditResult" class="audit-box" style="border: 1px solid var(--accent-color);"></div>
         </div>
       </div>
     </section>
